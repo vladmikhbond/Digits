@@ -2,19 +2,22 @@
     this.model = null;
     this.points = [];
 }
-Trace.prototype.D = 20;
+
+Trace.prototype.DIST = 10;
 
 Trace.prototype.addPoint = function (p) {
     this.points.push(p);
 };
 
-Trace.prototype.eliminateExtraPoins = function () {
+// Удаляет точки, расположенные ближе, чем this.D к текущей точке. Точка, расположенная дальше, становится текущей.
+//
+Trace.prototype.eliminateExtraPoints = function () {
 
     var p0 = this.points[0];
     var newPoints = [p0];
     for (var i in this.points) {
         var p = this.points[i];
-        if (dist(p, p0) > this.D || p.stable) {
+        if (dist(p, p0) > this.DIST || p.stable) {
             p0 = p;
             newPoints.push(p0);
         }
@@ -22,33 +25,31 @@ Trace.prototype.eliminateExtraPoins = function () {
     this.points = newPoints;
 };
 
-//Trace.prototype.markAsStables = function () {
-//    for (var i = 1; i < this.points.length - 1; i++) {
-//        var a = this.points[i - 1], b = this.points[i], c = this.points[i + 1];
-//        if (a.x < b.x && b.x > c.x || a.x > b.x && b.x < c.x ||
-//            a.y < b.y && b.y > c.y || a.y > b.y && b.y < c.y)
-//            this.points[i].stable = true;
-//    }
-//    this.points[i].stable = true;
-//    this.points[0].stable = true;
-//};
 
-Trace.prototype.findSharpCorners = function () {
+// Находит точки - вершины острых углов (cos > 0.1)
+// и разбивает трассу на несколько, проводя границы по острым углам
+//
+Trace.prototype.splitBySharpCorners = function () {
     var res = [];
+    var i0 = 0;
     for (var i = 1; i < this.points.length - 1; i++) {
         var a = { x: this.points[i - 1].x - this.points[i].x, y: this.points[i - 1].y - this.points[i].y };
         var b = { x: this.points[i + 1].x - this.points[i].x, y: this.points[i + 1].y - this.points[i].y };
-        var o = { x: 0, y: 0 };
         // 
         var cos = (a.x * b.x + a.y * b.y) / Math.sqrt((a.x * a.x + a.y * a.y) * (b.x * b.x + b.y * b.y));
-        if (cos > 0.1) {
-            res.push(this.points[i]);
+        if (cos > -0.1) {
+            var t = new Trace();
+            t.points = this.points.slice(i0, i + 1);
+            i0 = i;
+            res.push(t);
         }
     }
+    var t = new Trace();
+    t.points = this.points.slice(i0);
+    res.push(t);
+
     return res;
 };
-
-
 
 
 function dist(p, q) {

@@ -52,8 +52,10 @@
     <PackageCertificateKeyFile>BlankSharedApp1_TemporaryKey.pfx</PackageCertificateKeyFile>
   </PropertyGroup>
   <ItemGroup>
-    <Content Include="default.html" />
-    <Content Include="default.js" />
+    <Content Include="Controller.js" />
+    <Content Include="main.html" />
+    <Content Include="main.js" />
+    <Content Include="Model.js" />
     <Content Include="Trace.js" />
     <Content Include="View.js" />
   </ItemGroup>

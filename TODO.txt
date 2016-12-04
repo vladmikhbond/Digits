@@ -1,3 +1,2 @@
-1) sharp corners divide a trase on the two traces
-2) eliminate too closed points
-3) find local max and mins and save this point
+1) scaling (normalization)
+2) collect binary props
