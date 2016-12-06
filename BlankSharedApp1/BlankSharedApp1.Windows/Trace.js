@@ -1,6 +1,6 @@
-﻿function Trace() {
-    this.model = null;
-    this.points = [];
+﻿function Trace(points)
+{
+    this.points = points || [];
 }
 
 Trace.prototype.DIST = 5;
@@ -27,7 +27,7 @@ Trace.prototype.eliminateExtraPoints = function () {
 
 
 // Находит точки - вершины острых углов (cos > 0.1)
-// и разбивает трассу на несколько, проводя границы по острым углам
+// и разбивает трассу на несколько, проводя границы по острым углам.
 //
 Trace.prototype.splitBySharpCorners = function () {
     var res = [];
@@ -41,32 +41,27 @@ Trace.prototype.splitBySharpCorners = function () {
         // находим острый угол (cos >= 0 )
         if (cos > -0.1) {
             // добавляем кусок от начала трассы до найденного острого угла
-            var t = new Trace();
-            t.points = this.points.slice(i0, i + 1);
+            res.push(new Trace(this.points.slice(i0, i + 1)));         
             i0 = i;
-            res.push(t);
         }
     }
     // добавляем остаток трассы
-    var t = new Trace();
-    t.points = this.points.slice(i0);
-    res.push(t);
-
+    res.push(new Trace(this.points.slice(i0)));
     return res;
 };
 
 
-// Находит точки самопересечения трассы и отбивает от трассу найденный цикл.
-// Куски до и после цикла сращивает.
+// Находит точки самопересечения трассы и изымает из трассы найденные циклы.
+//
 Trace.prototype.splitByCircle = function () {
     var res = [];
     for (var i = 2; i < this.points.length; i++) {
         for (var j = 0; j < i - 2; j++) {
             if (dist(this.points[i], this.points[j]) < this.DIST) {
-                var t = new Trace();
-                t.points = this.points.slice(j, i);
-                res.push(t);
+                // добавляем циклический кусок от j до i
+                res.push(new Trace(this.points.slice(j, i)));
                 var n = i - j;
+                // изымаем из трассы циклический кусок
                 this.points.splice(j, n);
                 i -= n;
             }
@@ -76,6 +71,15 @@ Trace.prototype.splitByCircle = function () {
     return res;
 };
 
+Trace.prototype.tooShort = function () {
+    return this.points.length < 3;
+}
+
+Trace.prototype.isLoop = function ()
+{
+    return !this.tooShort() &&
+        dist(this.points[0], this.points[this.points.length - 1]) < 2 * this.DIST;
+}
 
 function dist(p, q) {
     var dx = p.x - q.x, dy = p.y - q.y;
@@ -112,13 +116,6 @@ function dist(p, q) {
 //        if (maxY < this.points[i].y) maxY = this.points[i].y;
 //    }
 //    return Math.max(maxX - minX, maxY - minY);
-//}
-
-//Trace.prototype.value = function () {
-//    if (dist(this.points[0], this.points[this.points.length - 1]) < this.model.size / 10)
-//        return 'O';
-//    else
-//        return 'I';
 //}
 
 
