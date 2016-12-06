@@ -12,11 +12,17 @@
     // Разбивает каждую трассу на несколько трасс
     //
     this.splitTraces = function () {
-        var tr = [];
+        var newTraces = [];
+
         for (var i in this.traces) {
-            tr = tr.concat(this.traces[i].splitBySharpCorners());
+            newTraces = newTraces.concat(this.traces[i].splitByCircle());
         }
-        this.traces = tr;
+        this.traces = newTraces;
+
+        for (var i in this.traces) {
+            newTraces = newTraces.concat(this.traces[i].splitBySharpCorners());
+        }
+        this.traces = newTraces;
     }
 
 }

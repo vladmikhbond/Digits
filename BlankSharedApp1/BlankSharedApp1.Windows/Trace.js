@@ -3,7 +3,7 @@
     this.points = [];
 }
 
-Trace.prototype.DIST = 10;
+Trace.prototype.DIST = 5;
 
 Trace.prototype.addPoint = function (p) {
     this.points.push(p);
@@ -33,21 +33,46 @@ Trace.prototype.splitBySharpCorners = function () {
     var res = [];
     var i0 = 0;
     for (var i = 1; i < this.points.length - 1; i++) {
+        // a и b - векторы, при условии, что начало координат в i-й точке
         var a = { x: this.points[i - 1].x - this.points[i].x, y: this.points[i - 1].y - this.points[i].y };
         var b = { x: this.points[i + 1].x - this.points[i].x, y: this.points[i + 1].y - this.points[i].y };
         // 
         var cos = (a.x * b.x + a.y * b.y) / Math.sqrt((a.x * a.x + a.y * a.y) * (b.x * b.x + b.y * b.y));
+        // находим острый угол (cos >= 0 )
         if (cos > -0.1) {
+            // добавляем кусок от начала трассы до найденного острого угла
             var t = new Trace();
             t.points = this.points.slice(i0, i + 1);
             i0 = i;
             res.push(t);
         }
     }
+    // добавляем остаток трассы
     var t = new Trace();
     t.points = this.points.slice(i0);
     res.push(t);
 
+    return res;
+};
+
+
+// Находит точки самопересечения трассы и отбивает от трассу найденный цикл.
+// Куски до и после цикла сращивает.
+Trace.prototype.splitByCircle = function () {
+    var res = [];
+    for (var i = 2; i < this.points.length; i++) {
+        for (var j = 0; j < i - 2; j++) {
+            if (dist(this.points[i], this.points[j]) < this.DIST) {
+                var t = new Trace();
+                t.points = this.points.slice(j, i);
+                res.push(t);
+                var n = i - j;
+                this.points.splice(j, n);
+                i -= n;
+            }
+        }
+    }
+    res.push(this);
     return res;
 };
 
