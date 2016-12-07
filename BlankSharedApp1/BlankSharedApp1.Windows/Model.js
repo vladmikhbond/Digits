@@ -1,5 +1,50 @@
 ﻿function Model() {
+    
+    this.width = canvas.width;
+    this.height = canvas.height;
     this.traces = [];
+
+    this.process = function () {
+        this.eliminateExtraPoints();
+        this.splitTraces();
+        this.removeShorts();
+        this.scale();
+    }
+
+    // Удаляет лишние точки из трасс
+    //
+    this.removeShorts = function () {
+        for (var i = this.traces.length - 1; i >= 0; i--) {
+            if (this.traces[i].tooShort())
+                this.traces.splice(i, 1);
+        }
+    }
+
+    // Масштабирует трассы
+    //
+    this.scale = function () {
+        // define maxes and mins
+        var xmin = ymin = Number.MAX_VALUE;
+        var xmax = ymax = 0;
+        for (var i in this.traces) {
+            for (var j = 0; j < this.traces[i].points.length; j++) {
+                var p = this.traces[i].points[j];
+                if (p.x < xmin) xmin = p.x;
+                if (p.y < ymin) ymin = p.y;
+                if (p.x > xmax) xmax = p.x;
+                if (p.y > ymax) ymax = p.y;
+            }
+        }
+
+        // normalize
+        var kx = this.width / (xmax - xmin);
+        var ky = this.height / (ymax - ymin);
+
+        for (var i = 0; i < this.traces.length; i++) {
+            this.traces[i].scale(xmin, ymin, kx, ky);
+        }
+    };
+
 
     // Удаляет лишние точки из трасс
     //

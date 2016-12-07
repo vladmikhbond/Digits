@@ -7,17 +7,24 @@
     
 }
 
-View.prototype.drawAll = function () {
-
+// Draw with scaling and marging (0 < scale <= 1). By default scale = 1.
+//
+View.prototype.drawAll = function (scale)
+{
+    scale = scale || 1;
     var colors = ["red", "green", "blue"];
     ctx = canvas.getContext('2d');
-
     ctx.clearRect(0, 0, canvas.width, canvas.height);
+    ctx.save();
+
+    // scaling and marging
+    ctx.transform(scale, 0, 0, scale, canvas.width * (1 - scale) / 2, canvas.height * (1 - scale) / 2);
+
     for (var t = 0; t < model.traces.length; t++) {
         ctx.beginPath();
         var p = model.traces[t].points[0];
         ctx.moveTo(p.x, p.y);
-        for (var i = 0; i < model.traces[t].points.length; i += 1) {
+        for (var i = 0; i < model.traces[t].points.length; i++) {
             var p = model.traces[t].points[i];
             ctx.moveTo(p.x, p.y);
             var radius = 2;
@@ -27,6 +34,7 @@ View.prototype.drawAll = function () {
         ctx.stroke();
     }
 
+    ctx.restore();
 }
 
 View.prototype.drawLine = function (p1, p2) {

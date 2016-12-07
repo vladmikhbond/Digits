@@ -9,6 +9,16 @@ Trace.prototype.addPoint = function (p) {
     this.points.push(p);
 };
 
+// Масштабирует в заданный размер
+//
+Trace.prototype.scale = function (dx, dy, kx, ky) {
+    for (var i = 0; i < this.points.length; i++) {
+        var p = this.points[i];
+        p.x = kx * (p.x - dx);
+        p.y = ky * (p.y - dy);
+    }
+};
+
 // Удаляет точки, расположенные ближе, чем this.D к текущей точке. Точка, расположенная дальше, становится текущей.
 //
 Trace.prototype.eliminateExtraPoints = function () {
@@ -42,7 +52,7 @@ Trace.prototype.splitBySharpCorners = function () {
         if (cos > -0.1) {
             // добавляем кусок от начала трассы до найденного острого угла
             res.push(new Trace(this.points.slice(i0, i + 1)));         
-            i0 = i;
+            i0 = i + 1;
         }
     }
     // добавляем остаток трассы

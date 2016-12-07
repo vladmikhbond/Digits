@@ -46,9 +46,8 @@
     // testing button click
     //
     function button_click() {
-        model.eliminateExtraPoints();
-        model.splitTraces();
-        view.drawAll();
+        model.process();
+        view.drawAll(0.5);
     }
 
 
