@@ -20,12 +20,12 @@ View.prototype.drawAll = function (scale)
     // scaling and marging
     ctx.transform(scale, 0, 0, scale, canvas.width * (1 - scale) / 2, canvas.height * (1 - scale) / 2);
 
-    for (var t = 0; t < model.traces.length; t++) {
+    for (var t = 0; t < scetch.traces.length; t++) {
         ctx.beginPath();
-        var p = model.traces[t].points[0];
+        var p = scetch.traces[t].points[0];
         ctx.moveTo(p.x, p.y);
-        for (var i = 0; i < model.traces[t].points.length; i++) {
-            var p = model.traces[t].points[i];
+        for (var i = 0; i < scetch.traces[t].points.length; i++) {
+            var p = scetch.traces[t].points[i];
             ctx.moveTo(p.x, p.y);
             var radius = 2;
             ctx.arc(p.x, p.y, radius, 0, Math.PI * 2);

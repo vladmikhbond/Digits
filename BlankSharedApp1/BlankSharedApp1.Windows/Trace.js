@@ -11,11 +11,11 @@ Trace.prototype.addPoint = function (p) {
 
 // Масштабирует в заданный размер
 //
-Trace.prototype.scale = function (dx, dy, kx, ky) {
+Trace.prototype.scale = function (dx, dy, k) {
     for (var i = 0; i < this.points.length; i++) {
         var p = this.points[i];
-        p.x = kx * (p.x - dx);
-        p.y = ky * (p.y - dy);
+        p.x = k * (p.x - dx);
+        p.y = k * (p.y - dy);
     }
 };
 
@@ -68,8 +68,11 @@ Trace.prototype.splitByCircle = function () {
     for (var i = 2; i < this.points.length; i++) {
         for (var j = 0; j < i - 2; j++) {
             if (dist(this.points[i], this.points[j]) < this.DIST) {
-                // добавляем циклический кусок от j до i
-                res.push(new Trace(this.points.slice(j, i)));
+                // добавляем циклическую трассу от j до i
+                var t = new Trace(this.points.slice(j, i));
+                t.points.push({ x: this.points[j].x, y: this.points[j].y })
+                res.push(t);
+
                 var n = i - j;
                 // изымаем из трассы циклический кусок
                 this.points.splice(j, n);

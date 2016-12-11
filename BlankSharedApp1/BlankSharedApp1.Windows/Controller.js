@@ -38,7 +38,7 @@
     function sketchpad_mouseUp() {
         if (drowing) {
             drowing = 0;
-            model.traces.push(trace);
+            scetch.traces.push(trace);
             view.drawAll();
         }
     }
@@ -46,8 +46,8 @@
     // testing button click
     //
     function button_click() {
-        model.process();
-        view.drawAll(0.5);
+        scetch.process();
+        view.drawAll(0.95);
     }
 
 

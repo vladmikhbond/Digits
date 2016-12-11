@@ -1,4 +1,4 @@
-﻿function Model() {
+﻿function Scetch() {
     
     this.width = canvas.width;
     this.height = canvas.height;
@@ -11,7 +11,7 @@
         this.scale();
     }
 
-    // Удаляет лишние точки из трасс
+    // Удаляет слишком короткие трассы
     //
     this.removeShorts = function () {
         for (var i = this.traces.length - 1; i >= 0; i--) {
@@ -39,9 +39,10 @@
         // normalize
         var kx = this.width / (xmax - xmin);
         var ky = this.height / (ymax - ymin);
+        var k = Math.min(kx, ky);
 
         for (var i = 0; i < this.traces.length; i++) {
-            this.traces[i].scale(xmin, ymin, kx, ky);
+            this.traces[i].scale(xmin, ymin, k);
         }
     };
 
