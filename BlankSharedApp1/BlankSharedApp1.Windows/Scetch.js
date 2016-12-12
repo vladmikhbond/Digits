@@ -36,13 +36,12 @@
             }
         }
 
-        // normalize
-        var kx = this.width / (xmax - xmin);
-        var ky = this.height / (ymax - ymin);
-        var k = Math.min(kx, ky);
+        // resize this
+        this.width = xmax - xmin;
+        this.height = ymax - ymin;
 
         for (var i = 0; i < this.traces.length; i++) {
-            this.traces[i].scale(xmin, ymin, k);
+            this.traces[i].translate(xmin, ymin);
         }
     };
 

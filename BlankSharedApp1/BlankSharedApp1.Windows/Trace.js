@@ -4,18 +4,20 @@
 }
 
 Trace.prototype.DIST = 5;
+Trace.prototype.SHORT = 5;
 
 Trace.prototype.addPoint = function (p) {
     this.points.push(p);
 };
 
-// Масштабирует в заданный размер
+// Сдвигает
 //
-Trace.prototype.scale = function (dx, dy, k) {
+Trace.prototype.translate = function (xmin, ymin) {
+ 
     for (var i = 0; i < this.points.length; i++) {
         var p = this.points[i];
-        p.x = k * (p.x - dx);
-        p.y = k * (p.y - dy);
+        p.x -= xmin;
+        p.y -= ymin;
     }
 };
 

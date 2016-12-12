@@ -48,6 +48,9 @@
     function button_click() {
         scetch.process();
         view.drawAll(0.95);
+
+        alert(n_arrow_n(scetch));
+
     }
 
 
