@@ -33,6 +33,8 @@ View.prototype.drawAll = function (scale)
         ctx.strokeStyle = colors[t % colors.length];
         ctx.stroke();
     }
+    ctx.strokeStyle = "lightgray";
+    ctx.strokeRect(0, 0, scetch.width, scetch.height);
 
     ctx.restore();
 }

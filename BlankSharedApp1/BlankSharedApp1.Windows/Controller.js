@@ -49,7 +49,7 @@
         scetch.process();
         view.drawAll(0.95);
 
-        alert(n_arrow_n(scetch));
+        alert(ne_arrow_w(scetch));
 
     }
 
