@@ -53,6 +53,7 @@
   </PropertyGroup>
   <ItemGroup>
     <Content Include="Controller.js" />
+    <Content Include="Analysis.js" />
     <Content Include="main.html" />
     <Content Include="main.js" />
     <Content Include="Scetch.js" />

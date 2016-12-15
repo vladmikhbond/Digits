@@ -86,33 +86,35 @@ Trace.prototype.splitByCircle = function () {
     return res;
 };
 
+// Определяет слишком короткие трассы
+//
 Trace.prototype.tooShort = function () {
-    return this.points.length < 3;
+    return this.points.length < this.SHORT;
 }
 
+// Определяет, является ли трасса циклом
+//
 Trace.prototype.isLoop = function ()
 {
     return !this.tooShort() &&
         dist(this.points[0], this.points[this.points.length - 1]) < 2 * this.DIST;
 }
 
+// Опредляет центр масс трассы
+//
+Trace.prototype.center = function () {
+    var x = y = 0;
+    for (var i in this.points) {
+        x += this.points[i].x;
+        y += this.points[i].y;
+    }
+    return { "x": x / this.points.length, "y": y / this.points.length };
+};
+
 function dist(p, q) {
     var dx = p.x - q.x, dy = p.y - q.y;
     return Math.sqrt(dx * dx + dy * dy);
 }
-
-
-
-//Trace.prototype.center = function () {
-//    var c = { x: 0, y: 0 };
-//    for (var i in this.points) {
-//        c.x += this.points[i].x;
-//        c.y += this.points[i].y;
-//    }
-//    c.x /= this.points.length;
-//    c.y /= this.points.length;
-//    return c;
-//};
 
 //Trace.prototype.len = function () {
 //    var sum = 0;

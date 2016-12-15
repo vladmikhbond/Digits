@@ -49,8 +49,7 @@
         scetch.process();
         view.drawAll(0.95);
 
-        alert(ne_arrow_w(scetch));
-
+        alert(new Analysis(scetch).loop(TEST));
     }
 
 
