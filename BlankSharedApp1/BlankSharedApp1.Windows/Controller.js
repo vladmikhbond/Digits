@@ -49,7 +49,7 @@
         scetch.process();
         view.drawAll(0.95);
 
-        alert(new Analysis(scetch).loop(TEST));
+        alert(new Analysis(scetch).test());
     }
 
 
