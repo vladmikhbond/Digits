@@ -1,9 +1,10 @@
 ﻿// стрелка направлена от конца к середине линии
 // угол отсчитывается от направления Ох по часовой стрелке - положительный, против - отрицательный
-// 0.5 rad = 30 grad
+//
 
-function Analysis(scetch) {
-    var L = Trace.prototype.SHORT - 1;
+function Analysis(scetch)
+{
+    var L = Trace.prototype.MIN_POINT_COUNT - 1;
     var pi = Math.PI;
     var pi2 = Math.PI / 2;
     var GRAD_30 = pi / 6, GRAD_45 = pi / 4;
@@ -65,12 +66,12 @@ function Analysis(scetch) {
 
     // цикл вверху (8,9)
     this.n_loop = function (c) {
-        return w/3 < c.x && c.x < 2 * w/3 && c.y < h/2;
+        return c.y < 2*h/5;
     }
 
     // цикл внизу (8,6)
     this.s_loop = function (c) {
-        return w/3 < c.x && c.x < 2 * w/3 && c.y > h/2;
+        return c.y > 3 * h/5;
     }
 
     //////////////////////////////////////////////////////////////////////////////
@@ -104,9 +105,8 @@ function Analysis(scetch) {
     }
 
 
-
-    this.test = function () {
-
+    this.test = function ()
+    {
         var n_arrow_s = this.arrow("n_arrow_s");     // 1,4
         var s_arrow_n = this.arrow("s_arrow_n");     // 1,4
         var nw_arrow_s = this.arrow("nw_arrow_s");   // 4,5
@@ -119,18 +119,18 @@ function Analysis(scetch) {
         var n_loop = this.loop("n_loop");  // 8,9
         var s_loop = this.loop("s_loop");  // 6,8
 
-        if (n_arrow_s && !nw_arrow_s)
+        if (s_arrow_n && nw_arrow_s)
+            return 4;
+        if (!sw_arrow_se && nw_arrow_e && !s_loop)
+            return 7;
+        if (n_arrow_s && s_arrow_n && !n_loop)
             return 1;
         if (se_arrow_w)
             return 2;
         if (nw_arrow_ne && sw_arrow_se && !ne_arrow_w)
             return 3;
-        if (s_arrow_n && nw_arrow_s)
-            return 4;
-        if (sw_arrow_se && ne_arrow_w)
+        if (sw_arrow_se && ne_arrow_w && !n_loop)
             return 5;
-        if (!sw_arrow_se && ne_arrow_w )
-            return 7;
         if (s_loop && !n_loop)
             return 6;
         if (n_loop && s_loop)

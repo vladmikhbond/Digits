@@ -1,3 +1,2 @@
-1) scaling (normalization) before point removing
-2) remove too short traces
-3) collect binary props
+1) add touch events
+2) make a component

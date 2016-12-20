@@ -7,6 +7,7 @@
     this.process = function () {
         this.eliminateExtraPoints();
         this.splitTraces();
+        this.separateLoops();
         this.removeShorts();
         this.scale();
     }
@@ -54,20 +55,22 @@
         }
     }
 
-    // Разбивает каждую трассу на несколько трасс
+    // Отделяет петли
     //
-    this.splitTraces = function () {
-        // отделяет петли
+    this.separateLoops = function () {
+        // 
         var newTraces = [];
         for (var i in this.traces) {
             newTraces = newTraces.concat(this.traces[i].splitByCircle());
         }
         this.traces = newTraces;
+    }
 
-        // разбивает непетли по острым углам
+    // Разбивает каждую трассу на несколько трасс по острым углам
+    //
+    this.splitTraces = function () {        
         var newTraces = [];
-        for (var i in this.traces)
-        {
+        for (var i in this.traces) {
             var t = this.traces[i];
             if (t.isLoop())
                 newTraces.push(t);

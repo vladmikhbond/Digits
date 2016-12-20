@@ -4,7 +4,7 @@
 }
 
 Trace.prototype.DIST = 5;
-Trace.prototype.SHORT = 5;
+Trace.prototype.MIN_POINT_COUNT = 5;
 
 Trace.prototype.addPoint = function (p) {
     this.points.push(p);
@@ -21,7 +21,7 @@ Trace.prototype.translate = function (xmin, ymin) {
     }
 };
 
-// Удаляет точки, расположенные ближе, чем this.D к текущей точке. Точка, расположенная дальше, становится текущей.
+// Удаляет точки, расположенные ближе, чем this.DIST к текущей точке. Точка, расположенная дальше, становится текущей.
 //
 Trace.prototype.eliminateExtraPoints = function () {
 
@@ -67,9 +67,13 @@ Trace.prototype.splitBySharpCorners = function () {
 //
 Trace.prototype.splitByCircle = function () {
     var res = [];
-    for (var i = 2; i < this.points.length; i++) {
-        for (var j = 0; j < i - 2; j++) {
-            if (dist(this.points[i], this.points[j]) < this.DIST) {
+    for (var i = this.MIN_POINT_COUNT; i < this.points.length; i++) {
+        for (var j = 0; j < i - this.MIN_POINT_COUNT; j++) {
+            if (dist(this.points[i], this.points[j]) < this.DIST * 4) {
+                // уточняем ближайшую точку
+                var pair = getNearestTwo(this, i, j);
+                i = pair.i; j = pair.j;
+
                 // добавляем циклическую трассу от j до i
                 var t = new Trace(this.points.slice(j, i));
                 t.points.push({ x: this.points[j].x, y: this.points[j].y })
@@ -86,19 +90,39 @@ Trace.prototype.splitByCircle = function () {
     return res;
 };
 
+// уточняет, какие точки в положительной окрестности самопересечения траектории являются ближайшими
+//
+function getNearestTwo(me, i, j) {
+    var L = me.MIN_POINT_COUNT;
+    var i2 = Math.min(i + L, me.points.length - 1);
+    var j2 = Math.min(j + L, me.points.length - 1);
+    var imin = i, jmin = j, dmin = dist(me.points[i], me.points[j]);
+    for (; i <= i2; i++) {
+        for (; j <= j2; j++) {
+            var d = dist(me.points[i], me.points[j]);
+            if ( d < dmin) {
+                imin = i; jmin = j; dmin = d;
+            }
+        }
+    }
+    return { i: imin, j: jmin };
+}
+
+
 // Определяет слишком короткие трассы
 //
 Trace.prototype.tooShort = function () {
-    return this.points.length < this.SHORT;
+    return this.points.length < this.MIN_POINT_COUNT ||
+        this.points.length < this.MIN_POINT_COUNT * 3 && this.isLoop();
 }
 
 // Определяет, является ли трасса циклом
 //
 Trace.prototype.isLoop = function ()
 {
-    return !this.tooShort() &&
-        dist(this.points[0], this.points[this.points.length - 1]) < 2 * this.DIST;
+    return dist(this.points[0], this.points[this.points.length - 1]) < 2 * this.DIST;
 }
+
 
 // Опредляет центр масс трассы
 //
