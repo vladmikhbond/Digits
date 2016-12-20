@@ -6,10 +6,15 @@
 
     this.process = function () {
         this.eliminateExtraPoints();
+        view.drawAll(0.95);
         this.splitTraces();
+        view.drawAll(0.95);
         this.separateLoops();
+        view.drawAll(0.95);
         this.removeShorts();
+        view.drawAll(0.95);
         this.scale();
+        view.drawAll(0.95);
     }
 
     // Удаляет слишком короткие трассы
@@ -61,7 +66,8 @@
         // 
         var newTraces = [];
         for (var i in this.traces) {
-            newTraces = newTraces.concat(this.traces[i].splitByCircle());
+            var splitted = this.traces[i].splitByCircle();
+            newTraces = newTraces.concat(splitted);
         }
         this.traces = newTraces;
     }

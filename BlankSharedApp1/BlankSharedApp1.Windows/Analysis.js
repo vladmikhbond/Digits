@@ -118,18 +118,19 @@ function Analysis(scetch)
         var c_loop = this.loop("c_loop");  // 0
         var n_loop = this.loop("n_loop");  // 8,9
         var s_loop = this.loop("s_loop");  // 6,8
+        var loop = c_loop || s_loop || n_loop
 
         if (s_arrow_n && nw_arrow_s)
             return 4;
-        if (!sw_arrow_se && nw_arrow_e && !s_loop)
+        if (!sw_arrow_se && nw_arrow_e && !loop)
             return 7;
-        if (n_arrow_s && s_arrow_n && !n_loop)
+        if (n_arrow_s && s_arrow_n && !loop)
             return 1;
         if (se_arrow_w)
             return 2;
         if (nw_arrow_ne && sw_arrow_se && !ne_arrow_w)
             return 3;
-        if (sw_arrow_se && ne_arrow_w && !n_loop)
+        if (sw_arrow_se && ne_arrow_w && !loop)
             return 5;
         if (s_loop && !n_loop)
             return 6;

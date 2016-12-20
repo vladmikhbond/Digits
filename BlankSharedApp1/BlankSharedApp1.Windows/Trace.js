@@ -75,14 +75,13 @@ Trace.prototype.splitByCircle = function () {
                 i = pair.i; j = pair.j;
 
                 // добавляем циклическую трассу от j до i
-                var t = new Trace(this.points.slice(j, i));
-                t.points.push({ x: this.points[j].x, y: this.points[j].y })
+                var t = new Trace(this.points.slice(j, i + 1));
                 res.push(t);
 
-                var n = i - j;
+                var n = i + 1 - j;
+                i = j + 1;
                 // изымаем из трассы циклический кусок
                 this.points.splice(j, n);
-                i -= n;
             }
         }
     }
@@ -92,13 +91,13 @@ Trace.prototype.splitByCircle = function () {
 
 // уточняет, какие точки в положительной окрестности самопересечения траектории являются ближайшими
 //
-function getNearestTwo(me, i, j) {
+function getNearestTwo(me, i1, j1) {
     var L = me.MIN_POINT_COUNT;
-    var i2 = Math.min(i + L, me.points.length - 1);
-    var j2 = Math.min(j + L, me.points.length - 1);
-    var imin = i, jmin = j, dmin = dist(me.points[i], me.points[j]);
-    for (; i <= i2; i++) {
-        for (; j <= j2; j++) {
+    var i2 = Math.min(i1 + L, me.points.length - 1);
+    var j2 = Math.min(j1 + L, me.points.length - 1);
+    var imin = i1, jmin = j1, dmin = dist(me.points[i1], me.points[j1]);
+    for (var i = i1; i <= i2; i++) {
+        for (var j = j1; j <= j2; j++) {
             var d = dist(me.points[i], me.points[j]);
             if ( d < dmin) {
                 imin = i; jmin = j; dmin = d;
