@@ -120,26 +120,29 @@ function Analysis(scetch)
         var s_loop = this.loop("s_loop");  // 6,8
         var loop = c_loop || s_loop || n_loop
 
+        var res = {};
         if (s_arrow_n && nw_arrow_s)
-            return 4;
-        if (!sw_arrow_se && nw_arrow_e && !loop)
-            return 7;
-        if (n_arrow_s && s_arrow_n && !loop)
-            return 1;
+            res["1"] = 1.0;
         if (se_arrow_w)
-            return 2;
+            res["2"] = 1.0;
         if (nw_arrow_ne && sw_arrow_se && !ne_arrow_w)
-            return 3;
+            res["3"] = 1.0;
+        if (n_arrow_s && s_arrow_n && !loop)
+            res["4"] = 1.0;
         if (sw_arrow_se && ne_arrow_w && !loop)
-            return 5;
+            res["5"] = 1.0;
         if (s_loop && !n_loop)
-            return 6;
+            res["6"] = 1.0;
+        if (!sw_arrow_se && nw_arrow_e && !loop)
+            res["7"] = 1.0;
         if (n_loop && s_loop)
-            return 8;
+            res["8"] = 1.0;
         if (n_loop && !s_loop)
-            return 9;
+            res["9"] = 1.0;
         if (c_loop)
-            return 0;
+            res["0"] = 1.0;
+
+        return JSON.stringify(res);
     }
 }
 
