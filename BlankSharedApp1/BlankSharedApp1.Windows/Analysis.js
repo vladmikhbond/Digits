@@ -7,56 +7,58 @@ function Analysis(scetch)
     var L = Trace.prototype.MIN_POINT_COUNT - 1;
     var pi = Math.PI;
     var pi2 = Math.PI / 2;
-    var GRAD_30 = pi / 6, GRAD_45 = pi / 4;
+    var GRAD_45 = pi / 4;
+    var GRAD_30 = pi / 6;
+    var GRAD_15 = pi / 12;
     var h = scetch.height;
     var w = scetch.width;
 
-    // вверху стрелка на юг ~30 (1, 4)
+    // вверху стрелка на юг +-15 (1, 4)
     this.n_arrow_s = function (p1, p2) {
         var alpha = Math.atan2(p2.y - p1.y, p2.x - p1.x);
-        return p1.y < h/2 && alpha > pi2 - GRAD_30 && alpha < pi2 + GRAD_30;
+        return p1.y < h/2 && alpha > pi2 - GRAD_15 && alpha < pi2 + GRAD_15;
     }
 
-    // вверху слева стрелка на юг ~30 (1, 4)
+    // внизу стрелка на север +-15 (1, 4)
+    this.s_arrow_n = function (p1, p2) {
+        var alpha = Math.atan2(p2.y - p1.y, p2.x - p1.x);
+        return p1.y > h/2 && alpha < -pi2 + GRAD_15 && alpha > -pi2 - GRAD_15;
+    }
+
+    // вверху слева стрелка на юг +30-30 (4, 5)
     this.nw_arrow_s = function (p1, p2) {
         var alpha = Math.atan2(p2.y - p1.y, p2.x - p1.x);
         return p1.x < w/2 && p1.y < h/2 && alpha > pi2 - GRAD_30 && alpha < pi2 + GRAD_30;
     }
 
-    // внизу стрелка на север ~30 (1, 4)
-    this.s_arrow_n = function (p1, p2) {
+    // в самом низу справа стрелка на запад +-15 (2)
+    this.sse_arrow_w = function (p1, p2) {
         var alpha = Math.atan2(p2.y - p1.y, p2.x - p1.x);
-        return p1.y > h/2 && alpha < -pi2 + GRAD_30 && alpha > -pi2 - GRAD_30;
+        return p1.y > 0.8 * h && p1.x > w / 2 && (alpha < -pi + GRAD_15 || alpha > pi2 - GRAD_15);
     }
 
-    // в самом низу справа стрелка на запад ~30 (2)
-    this.se_arrow_w = function (p1, p2) {
+    // в самом верху справа стрелка на запад +-15 (5,7)
+    this.nne_arrow_w = function (p1, p2) {
         var alpha = Math.atan2(p2.y - p1.y, p2.x - p1.x);
-        return p1.y > 0.8 * h && p1.x > w / 2 && (alpha < -pi + GRAD_30 || alpha > pi2 - GRAD_30);
+        return p1.y < h / 5 && p1.x > w / 3 && (alpha < -pi + GRAD_15 || alpha > pi2 - GRAD_15);
     }
 
-    // в самом верху справа стрелка на запад ~30 (5,7)
-    this.ne_arrow_w = function (p1, p2) {
+    // в середине справа стрелка на запад +-15 (5,7)
+    this.e_arrow_w = function (p1, p2) {
         var alpha = Math.atan2(p2.y - p1.y, p2.x - p1.x);
-        return p1.y < h/5 && p1.x > w / 2 && (alpha < -pi + GRAD_30 || alpha > pi2 - GRAD_30);
+        return h/3 < p1.y && p1.y < 4 * h / 5 && p1.x > w / 3 && (alpha < -pi + GRAD_15 || alpha > pi2 - GRAD_15);
     }
 
-    // вверху слева стрелка северо-восток ~45 (2,3)
+    // вверху слева стрелка северо-восток +-45 (2,3)
     this.nw_arrow_ne = function (p1, p2) {
         var alpha = Math.atan2(p2.y - p1.y, p2.x - p1.x);
         return p1.y < h/2 && p1.x < w/2 && alpha < 0 && alpha > -pi2;
     }
 
-    // внизу слева стрелка юго-восток -90+45 (3,5,9)
+    // внизу слева стрелка юго-восток +-45 (3,5,9)
     this.sw_arrow_se = function (p1, p2) {
         var alpha = Math.atan2(p2.y - p1.y, p2.x - p1.x);
-        return p1.y > h/2 && p1.x < w/2 && alpha > -GRAD_45 && alpha < pi2;
-    }
-
-    // вверху слева стрелка на восток ~30 (5,7)
-    this.nw_arrow_e = function (p1, p2) {
-        var alpha = Math.atan2(p2.y - p1.y, p2.x - p1.x);
-        return p1.y < h/2 && p1.x < w/2 && (alpha > -GRAD_30 && alpha < GRAD_30);
+        return p1.y > h/2 && p1.x < w/2 && alpha > 0 && alpha < pi2;
     }
 
     // цикл по центру (0)
@@ -107,42 +109,38 @@ function Analysis(scetch)
 
     this.test = function ()
     {
-        var n_arrow_s = this.arrow("n_arrow_s");     // 1,4
-        var s_arrow_n = this.arrow("s_arrow_n");     // 1,4
-        var nw_arrow_s = this.arrow("nw_arrow_s");   // 4,5
-        var se_arrow_w = this.arrow("se_arrow_w");   // 2
-        var ne_arrow_w = this.arrow("ne_arrow_w");   // 2
-        var nw_arrow_ne = this.arrow("nw_arrow_ne"); // 2,3
-        var sw_arrow_se = this.arrow("sw_arrow_se"); // 3,5,9
-        var nw_arrow_e = this.arrow("nw_arrow_e");   // 5,7
-        var c_loop = this.loop("c_loop");  // 0
-        var n_loop = this.loop("n_loop");  // 8,9
-        var s_loop = this.loop("s_loop");  // 6,8
-        var loop = c_loop || s_loop || n_loop
+        var b = [], v = [], res = {"0":0,"1":0,"2":0,"3":0,"4":0,"5":0,"6":0,"7":0,"8":0,"9":0 }; 
+        //////////////////////////////////////// "0123456789"
+        b[0] = this.arrow("n_arrow_s");   v[0] = "-+--+--0-0"; // вверху стрелка на юг +-15 (1, 4)
+        b[1] = this.arrow("s_arrow_n");   v[1] = "-+--+--+--"; // внизу стрелка на север +-15 (1, 4)
+        b[2] = this.arrow("nw_arrow_s");  v[2] = "-0--++0---"; // вверху слева стрелка на юг +30-30 (4, 5)
+        b[3] = this.arrow("sse_arrow_w"); v[3] = "-0+-0-----"; // в самом низу справа стрелка на запад +-15 (2)
+        b[4] = this.arrow("nne_arrow_w"); v[4] = "-0---+0+--"; // в самом верху справа стрелка на запад +-15 (5,7)
+        b[5] = this.arrow("nw_arrow_ne"); v[5] = "--++------"; // вверху слева стрелка северо-восток +-45 (2,3)
+        b[6] = this.arrow("sw_arrow_se"); v[6] = "--0+-+---+"; // внизу слева стрелка юго-восток +-45 (3,5,9)
+        ////////////////////////////////// "0123456789"
+        b[7] = this.loop("c_loop"); v[7] = "+---------"; // цикл по центру (0)
+        b[8] = this.loop("n_loop"); v[8] = "--------++"; // цикл вверху (8,9)
+        b[9] = this.loop("s_loop"); v[9] = "------+-+-"; // цикл внизу (8,6)       
 
-        var res = {};
-        if (s_arrow_n && nw_arrow_s)
-            res["1"] = 1.0;
-        if (se_arrow_w)
-            res["2"] = 1.0;
-        if (nw_arrow_ne && sw_arrow_se && !ne_arrow_w)
-            res["3"] = 1.0;
-        if (n_arrow_s && s_arrow_n && !loop)
-            res["4"] = 1.0;
-        if (sw_arrow_se && ne_arrow_w && !loop)
-            res["5"] = 1.0;
-        if (s_loop && !n_loop)
-            res["6"] = 1.0;
-        if (!sw_arrow_se && nw_arrow_e && !loop)
-            res["7"] = 1.0;
-        if (n_loop && s_loop)
-            res["8"] = 1.0;
-        if (n_loop && !s_loop)
-            res["9"] = 1.0;
-        if (c_loop)
-            res["0"] = 1.0;
+        //////////////////////////////////////// "0123456789"
+        b[10] = this.arrow("e_arrow_w"); v[10] = "0-000+0000";  // в середине справа стрелка на запад +-15 (1|4) 
 
-        return JSON.stringify(res);
+        // summarize
+        var values = { '+': 1, '-': -10, '0': 0 };
+        for (var i in b) {
+            for (var j in res) {
+                var c = v[i][j];
+                var val = values[c]
+                res[j] += b[i] ? val : 0;
+            }
+        }
+
+        // order
+        var arr = Object.entries(res)
+        arr.sort((p1, p2) => p2[1] - p1[1]);        
+        arr = arr.map(p => p[0]);
+        return JSON.stringify(arr);
     }
 }
 
