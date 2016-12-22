@@ -40,7 +40,7 @@ function Analysis(scetch)
     // в самом верху справа стрелка на запад +-15 (5,7)
     this.nne_arrow_w = function (p1, p2) {
         var alpha = Math.atan2(p2.y - p1.y, p2.x - p1.x);
-        return p1.y < h / 5 && p1.x > w / 3 && (alpha < -pi + GRAD_15 || alpha > pi2 - GRAD_15);
+        return p1.y < h / 5 && p1.x > 3 * w / 4 && (alpha < -pi + GRAD_15 || alpha > pi - GRAD_15);
     }
 
     // в середине справа стрелка на запад +-15 (5,7)
@@ -96,6 +96,8 @@ function Analysis(scetch)
 
         for (var i = 0; i < scetch.traces.length; i++) {
             var trace = scetch.traces[i];
+            if (trace.isLoop())
+                continue;
             // с одной стороны
             if (fun(trace.points[0], trace.points[L]))
                 return true;
@@ -115,7 +117,7 @@ function Analysis(scetch)
         b[1] = this.arrow("s_arrow_n");   v[1] = "-+--+--+--"; // внизу стрелка на север +-15 (1, 4)
         b[2] = this.arrow("nw_arrow_s");  v[2] = "-0--++0---"; // вверху слева стрелка на юг +30-30 (4, 5)
         b[3] = this.arrow("sse_arrow_w"); v[3] = "-0+-0-----"; // в самом низу справа стрелка на запад +-15 (2)
-        b[4] = this.arrow("nne_arrow_w"); v[4] = "-0---+0+--"; // в самом верху справа стрелка на запад +-15 (5,7)
+        b[4] = this.arrow("nne_arrow_w"); v[4] = "-----+0+--"; // в самом верху справа стрелка на запад +-15 (5,7)
         b[5] = this.arrow("nw_arrow_ne"); v[5] = "--++------"; // вверху слева стрелка северо-восток +-45 (2,3)
         b[6] = this.arrow("sw_arrow_se"); v[6] = "--0+-+---+"; // внизу слева стрелка юго-восток +-45 (3,5,9)
         ////////////////////////////////// "0123456789"
@@ -139,7 +141,7 @@ function Analysis(scetch)
         // order
         var arr = Object.entries(res)
         arr.sort((p1, p2) => p2[1] - p1[1]);        
-        arr = arr.map(p => p[0]);
+        arr = arr.map(p => p[0] + "(" + p[1] + ")" );
         return JSON.stringify(arr);
     }
 }
