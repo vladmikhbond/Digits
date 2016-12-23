@@ -1,4 +1,4 @@
-﻿// Prepare all digit
+﻿// Prepare a digit on the whole
 //
 function Scetch() {
     
@@ -8,15 +8,21 @@ function Scetch() {
 
     this.process = function () {
         this.eliminateExtraPoints();
-        view.drawAll(0.95);
         this.splitTraces();
-        view.drawAll(0.95);
         this.separateLoops();
-        view.drawAll(0.95);
         this.removeShorts();
-        view.drawAll(0.95);
         this.scale();
-        view.drawAll(0.95);
+        this.defineElements();
+    }
+
+    // Определяет элементы
+    //
+    this.defineElements = function () {
+        this.elements = [];
+        for (var i in this.traces) {
+            var el = this.traces[i].getElement();
+            this.elements.push(el);
+        }
     }
 
     // Удаляет слишком короткие трассы

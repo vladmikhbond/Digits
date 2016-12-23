@@ -1,4 +1,6 @@
-﻿//
+﻿// стрелка направлена от конца к середине линии
+// угол отсчитывается от направления Ох по часовой стрелке - положительный, против - отрицательный
+//
 
 function Analysis(scetch)
 {
@@ -10,13 +12,6 @@ function Analysis(scetch)
     var GRAD_15 = pi / 12;
     var h = scetch.height;
     var w = scetch.width;
-
-
-
-
-
-
-
 
     // вверху-справа стрелка на юг +-15 (1, 4)
     this.ne_arrow_s = function (p1, p2) {

@@ -1,4 +1,5 @@
-﻿function Controller() {
+﻿function Controller()
+{
     canvas.addEventListener('mousedown', sketchpad_mouseDown, false);
     canvas.addEventListener('mousemove', sketchpad_mouseMove, false);
     window.addEventListener('mouseup', sketchpad_mouseUp, false);
@@ -49,7 +50,7 @@
         scetch.process();
         view.drawAll(0.95);
 
-        alert(new Analysis(scetch).test());
+        //alert(new Analysis(scetch).test());
     }
 
 

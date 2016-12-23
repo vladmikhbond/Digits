@@ -119,10 +119,38 @@ Trace.prototype.tooShort = function () {
 
 // Определяет, является ли трасса циклом
 //
-Trace.prototype.isLoop = function ()
-{
+Trace.prototype.isLoop = function () {
     return dist(this.points[0], this.points[this.points.length - 1]) < 2 * this.DIST;
 }
+
+// Определяет, каким элементом является трасса
+//
+Trace.prototype.getElement = function () {
+    var p1 = this.points[0];
+    var p2 = this.points[this.points.length - 1];
+    if (p1.y * 10000 + p1.x > p2.y * 10000 + p2.x) {
+        var temp = p1; p1 = p2; p2 = temp;
+    }
+
+    // loop
+    if (dist(p1, p2) < 2 * this.DIST)
+        return { type: 'loop', center: this.center() };
+
+    // line or arc.   0 <= alpha < PI
+    var p3 = this.points[this.points.length / 2 | 0];  // middle point
+    var alpha12 = Math.atan2(p2.y - p1.y, p2.x - p1.x);
+    var alpha13 = Math.atan2(p3.y - p1.y, p3.x - p1.x); 
+
+    if (Math.abs(alpha12 - alpha13) < Math.PI / 20) {
+        return { type: 'line', 'p1': p1, 'p2': p2, alpha: alpha12 };
+    } else {
+        return { type: 'arc', 'p1': p1, 'p2': p2, alpha: alpha12, arc: alpha12 > alpha13 ? 'R' : 'L' };
+    }
+}
+
+
+
+
 
 
 // Опредляет центр масс трассы
