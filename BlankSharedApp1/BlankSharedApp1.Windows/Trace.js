@@ -1,4 +1,6 @@
-﻿function Trace(points)
+﻿// Prepare one trace
+//
+function Trace(points)
 {
     this.points = points || [];
 }

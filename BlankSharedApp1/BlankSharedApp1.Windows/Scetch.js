@@ -1,4 +1,6 @@
-﻿function Scetch() {
+﻿// Prepare all digit
+//
+function Scetch() {
     
     this.width = canvas.width;
     this.height = canvas.height;
