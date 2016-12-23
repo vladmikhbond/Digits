@@ -142,9 +142,9 @@ Trace.prototype.getElement = function () {
     var alpha13 = Math.atan2(p3.y - p1.y, p3.x - p1.x); 
 
     if (Math.abs(alpha12 - alpha13) < Math.PI / 20) {
-        return { type: 'line', 'p1': p1, 'p2': p2, alpha: alpha12 };
+        return { type: 'line', 'p1': p1, 'p2': p2, alpha: alpha12, length: dist(p1, p2) };
     } else {
-        return { type: 'arc', 'p1': p1, 'p2': p2, alpha: alpha12, arc: alpha12 > alpha13 ? 'R' : 'L' };
+        return { type: 'arc', 'p1': p1, 'p2': p2, center: this.center(), alpha: alpha12, arc: alpha12 > alpha13 ? 'R' : 'L' };
     }
 }
 

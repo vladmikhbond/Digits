@@ -5,6 +5,7 @@ function Scetch() {
     this.width = canvas.width;
     this.height = canvas.height;
     this.traces = [];
+    this.elements = [];
 
     this.process = function () {
         this.eliminateExtraPoints();
