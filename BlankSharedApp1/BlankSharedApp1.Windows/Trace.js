@@ -40,6 +40,8 @@ Trace.prototype.eliminateExtraPoints = function () {
 };
 
 
+
+
 // Находит точки - вершины острых углов (cos > 0.1)
 // и разбивает трассу на несколько, проводя границы по острым углам.
 //
@@ -60,7 +62,9 @@ Trace.prototype.splitBySharpCorners = function () {
         }
     }
     // добавляем остаток трассы
-    res.push(new Trace(this.points.slice(i0)));
+    var t = new Trace(this.points.slice(i0));
+    if (!t.tooShort())
+        res.push(t);
     return res;
 };
 
@@ -91,7 +95,7 @@ Trace.prototype.splitByCircle = function () {
     return res;
 };
 
-// уточняет, какие точки в положительной окрестности самопересечения траектории являются ближайшими
+// Уточняет, какие точки в положительной окрестности самопересечения траектории являются ближайшими
 //
 function getNearestTwo(me, i1, j1) {
     var L = me.MIN_POINT_COUNT;
@@ -108,6 +112,44 @@ function getNearestTwo(me, i1, j1) {
     }
     return { i: imin, j: jmin };
 }
+
+// Разбивает трассу на несколько, проводя границы по точкам перегиба.
+//
+Trace.prototype.splitByInflectionPoints = function () {
+    function atan(p, q) {
+        var a = Math.atan2(p.y - q.y, p.x - q.x);
+        return a < 0 ? 2 * Math.PI + a : a;
+    }
+
+    function atan2(p1, p2, p3) {
+        var a2 = atan(p2, p1), a3 = atan(p3, p1);
+        var a = a3 - a2;
+        return a > Math.PI ? a - 2 * Math.PI : a;
+    }
+
+    var res = [];
+
+    var L = 5, a0, i0 = 0;
+    for (var i = 0; i < this.points.length - 2 * L - 1; i++) {
+        var p1 = this.points[i], p2 = this.points[i + L], p3 = this.points[i + L + L];
+        var a = atan2(p1, p2, p3);
+        if (i == 0) continue;
+        // i - индекс точки перегиба (соседние углы имеют разные знаки)
+        if (a0 * a < 0) {
+            // добавляем кусок от начала трассы до найденной точки перегиба
+            res.push(new Trace(this.points.slice(i0, i + 1)));
+            i0 = i + 1;
+        }
+        a0 = a;
+    }
+    // добавляем остаток трассы
+    var t = new Trace(this.points.slice(i0));
+    if (!t.tooShort())
+        res.push(t);
+    return res;
+};
+
+
 
 
 // Определяет слишком короткие трассы

@@ -49,9 +49,11 @@
     function button_click() {
         scetch.process();
         view.drawAll(0.95);
-        aaa = new Analysis(scetch).line_ver_long();
-        bbb = new Analysis(scetch).line_hor_middle();
-        //alert(new Analysis(scetch).test());
+
+
+        //scetch.traces[0].splitByInflectionPoints();
+
+        //alert(new Analysis(scetch).doTests());
     }
 
 

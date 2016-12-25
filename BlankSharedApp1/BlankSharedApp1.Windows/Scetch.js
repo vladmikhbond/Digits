@@ -9,8 +9,10 @@ function Scetch() {
 
     this.process = function () {
         this.eliminateExtraPoints();
-        this.splitTraces();
+        this.splitTracesByCorners();
         this.separateLoops();
+        this.removeShorts();
+        this.splitTracesByInflactions();
         this.removeShorts();
         this.scale();
         this.defineElements();
@@ -83,7 +85,7 @@ function Scetch() {
 
     // Разбивает каждую трассу на несколько трасс по острым углам
     //
-    this.splitTraces = function () {        
+    this.splitTracesByCorners = function () {
         var newTraces = [];
         for (var i in this.traces) {
             var t = this.traces[i];
@@ -91,6 +93,20 @@ function Scetch() {
                 newTraces.push(t);
             else
                 newTraces = newTraces.concat(t.splitBySharpCorners());
+        }
+        this.traces = newTraces;
+    }
+
+    // Разбивает каждую трассу на несколько трасс по точуам перегиба
+    //
+    this.splitTracesByInflactions = function () {
+        var newTraces = [];
+        for (var i in this.traces) {
+            var t = this.traces[i];
+            if (t.isLoop())
+                newTraces.push(t);
+            else
+                newTraces = newTraces.concat(t.splitByInflectionPoints());
         }
         this.traces = newTraces;
     }
