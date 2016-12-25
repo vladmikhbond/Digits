@@ -8,14 +8,23 @@ function Scetch() {
     this.elements = [];
 
     this.process = function () {
+        view.drawAll(0.95);
         this.eliminateExtraPoints();
+        view.drawAll(0.95);
         this.splitTracesByCorners();
+        view.drawAll(0.95);
         this.separateLoops();
+        view.drawAll(0.95);
         this.removeShorts();
+        view.drawAll(0.95);
         this.splitTracesByInflactions();
-        this.removeShorts();
+        view.drawAll(0.95);
+//        this.removeShorts();
+        view.drawAll(0.95);
         this.scale();
+        view.drawAll(0.95);
         this.defineElements();
+        view.drawAll(0.95);
     }
 
     // Определяет элементы

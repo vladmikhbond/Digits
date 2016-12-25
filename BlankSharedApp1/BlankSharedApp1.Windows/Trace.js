@@ -25,15 +25,21 @@ Trace.prototype.translate = function (xmin, ymin) {
 
 // Удаляет точки, расположенные ближе, чем this.DIST к текущей точке. Точка, расположенная дальше, становится текущей.
 //
-Trace.prototype.eliminateExtraPoints = function () {
-
+Trace.prototype.eliminateExtraPoints = function ()
+{
+    var L = 3;
     var p0 = this.points[0];
     var newPoints = [p0];
-    for (var i in this.points) {
+    for (var i = 0; i < this.points.length - 1; i++) {
         var p = this.points[i];
-        if (dist(p, p0) > this.DIST || p.stable) {
+        if (dist(p, p0) > this.DIST) {
             p0 = p;
-            newPoints.push(p0);
+            var x = 0, y = 0;
+            for (var k = 0, j = Math.max(0, i - L) ; j <= Math.min(this.points.length - 1, i + L) ; j++, k++) {
+                x += this.points[j].x;
+                y += this.points[j].y;
+            }
+            newPoints.push({ 'x': x / k, 'y': y / k } );
         }
     }
     this.points = newPoints;
@@ -115,7 +121,7 @@ function getNearestTwo(me, i1, j1) {
 
 // Разбивает трассу на несколько, проводя границы по точкам перегиба.
 //
-Trace.prototype.splitByInflectionPoints = function () {
+Trace.prototype.splitByInflectionPoints111 = function () {
     function atan(p, q) {
         var a = Math.atan2(p.y - q.y, p.x - q.x);
         return a < 0 ? 2 * Math.PI + a : a;
@@ -146,6 +152,40 @@ Trace.prototype.splitByInflectionPoints = function () {
     var t = new Trace(this.points.slice(i0));
     if (!t.tooShort())
         res.push(t);
+    return res;
+};
+
+
+Trace.prototype.splitByInflectionPoints = function ()
+{
+    function atan2(p1, p2, p3) {
+        var a2 = Math.atan2(p2.y - p1.y, p2.x - p1.x);
+        var a3 = Math.atan2(p3.y - p2.y, p3.x - p2.x);
+        return a3 - a2;
+    }
+
+    var L = 5, i0 = 0, a = [];
+    for (var i = 0; i < this.points.length - 2 * L - 1; i++) {
+        var p1 = this.points[i], p2 = this.points[i + L], p3 = this.points[i + L + L];
+        a.push(atan2(p1, p2, p3));
+    }
+    var ext = [];
+    for (var i = 1; i < a.length - 2; i++) {
+        if (a[i - 1] < a[i] && a[i] > a[i + 1] || a[i - 1] > a[i] && a[i] < a[i + 1])
+            ext.push(i);
+    }
+
+    var res = [];
+    var j0 = 0;
+    for (var i = 1; i < ext.length - 1; i++) {
+        var j = (ext[i] + ext[i + 1]) / 2 | 0;
+        var t = new Trace(this.points.slice(j0, j));
+        res.push(t);
+        j0 = j;
+    }
+    var t = new Trace(this.points.slice(j0));
+    res.push(t);
+
     return res;
 };
 

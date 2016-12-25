@@ -50,9 +50,7 @@
         scetch.process();
         view.drawAll(0.95);
 
-
         //scetch.traces[0].splitByInflectionPoints();
-
         //alert(new Analysis(scetch).doTests());
     }
 
