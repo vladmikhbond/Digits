@@ -21,8 +21,10 @@ View.prototype.drawAll = function (scale)
     ctx.transform(scale, 0, 0, scale, canvas.width * (1 - scale) / 2, canvas.height * (1 - scale) / 2);
 
     for (var t = 0; t < scetch.traces.length; t++) {
-        if (!scetch.traces[t].points.length)
-            continue;
+
+        //if (!scetch.traces[t].points.length)
+        //    continue;
+
         ctx.beginPath();
         var p = scetch.traces[t].points[0];
         ctx.moveTo(p.x, p.y);
@@ -34,6 +36,10 @@ View.prototype.drawAll = function (scale)
         }
         ctx.strokeStyle = colors[t % colors.length];
         ctx.stroke();
+        //
+        if (scetch.elements.length) {
+            ctx.fillText(scetch.elements[t].type, scetch.elements[t].center.x, scetch.elements[t].center.y);
+        }
     }
     ctx.strokeStyle = "lightgray";
     ctx.strokeRect(0, 0, scetch.width, scetch.height);
@@ -50,3 +56,5 @@ View.prototype.drawLine = function (p1, p2) {
     //ctx.closePath();
     ctx.stroke();
 }
+
+

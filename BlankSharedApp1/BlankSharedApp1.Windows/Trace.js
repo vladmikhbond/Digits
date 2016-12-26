@@ -164,28 +164,42 @@ Trace.prototype.splitByInflectionPoints = function ()
         return a3 - a2;
     }
 
-    var L = 5, i0 = 0, a = [];
+    var L = 5, K = 0.15, a = [];
     for (var i = 0; i < this.points.length - 2 * L - 1; i++) {
         var p1 = this.points[i], p2 = this.points[i + L], p3 = this.points[i + L + L];
-        a.push(atan2(p1, p2, p3));
-    }
-    var ext = [];
-    for (var i = 1; i < a.length - 2; i++) {
-        if (a[i - 1] < a[i] && a[i] > a[i + 1] || a[i - 1] > a[i] && a[i] < a[i + 1])
-            ext.push(i);
+        var q = atan2(p1, p2, p3);
+        if (q > K) {
+            q = 1;
+            var flag_max = true;
+        } else if (q > -K) {
+            q = 0;
+        } else {
+            q = -1;
+            var flag_min = true;
+        }
+        a.push(q);
     }
 
     var res = [];
-    var j0 = 0;
-    for (var i = 1; i < ext.length - 1; i++) {
-        var j = (ext[i] + ext[i + 1]) / 2 | 0;
-        var t = new Trace(this.points.slice(j0, j));
-        res.push(t);
-        j0 = j;
+    if (!flag_max || !flag_min) {
+        res.push(this);
+        return res;
     }
-    var t = new Trace(this.points.slice(j0));
-    res.push(t);
 
+
+    var i0 = 0;
+    for (var i = 1; i < a.length - 1; i++) {
+        if (a[i] != a[i - 1]) {
+            var t = new Trace(this.points.slice(i0, i+1));
+            if (!t.tooShort())
+                res.push(t);
+            i0 = i + 1;
+        }
+    }
+    // добавляем остаток трассы
+    var t = new Trace(this.points.slice(i0));
+    if (!t.tooShort())
+        res.push(t);
     return res;
 };
 
@@ -224,7 +238,7 @@ Trace.prototype.getElement = function () {
     var alpha13 = Math.atan2(p3.y - p1.y, p3.x - p1.x); 
 
     if (Math.abs(alpha12 - alpha13) < Math.PI / 20) {
-        return { type: 'line', 'p1': p1, 'p2': p2, alpha: alpha12, length: dist(p1, p2) };
+        return { type: 'line', 'p1': p1, 'p2': p2, alpha: alpha12, length: dist(p1, p2), center: this.center() };
     } else {
         return { type: 'arc', 'p1': p1, 'p2': p2, center: this.center(), alpha: alpha12, arc: alpha12 > alpha13 ? 'R' : 'L' };
     }

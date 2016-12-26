@@ -8,7 +8,7 @@ function Analysis(scetch) {
 
 
 
-    // Kuantors
+    // Quantors
 
     function Exists(fun) {
         for (var i = 0; i < scetch.traces.length; i++) {         
@@ -32,58 +32,61 @@ function Analysis(scetch) {
 
     var tests = [];
 
-    // длинная вертикальная линия  (1,4) 
+    // длинная вертикальная линия 
     tests[0] = function () {
         return Exists(e => {
             return e.type == 'line' && 9 * pi / 20 < e.alpha && e.alpha < 11 * pi / 20 && e.length > 4 * h / 5;
         }) && [1, 4];
-    }
+    };
+    tests[0].leg = 'длинная вертикальная линия';
 
-    // дуга R в центре или внизу(2,5)
-    tests[1] = function (e) {
+    // дуга R в верхней половине
+    tests[1] = function () {
         return Exists(e => {
             if (e.type != 'arc') return false;
             var y = e.center.y;
-            return e.arc == 'R' && 2 * h / 5 < y && y < 4 * h / 5;
-        }) && [2, 5];
+            return e.arc == 'R' && y < h / 2;
+        }) && [2,3];
     }
 
-    // дуга R в центре или верху(2,3)
-    tests[2] = function (e) {
+    // дуга R в нижней половине
+    tests[2] = function () {
         return Exists(e => {
             if (e.type != 'arc') return false;
             var y = e.center.y;
-            return e.arc == 'R' && h / 5 < y && y < 3 * h / 5;
-        }) && [2, 3];
+            return e.arc == 'R' && h / 2 < y;
+        }) && [3,5];
     }
 
-    // две дуги R (3)
-    tests[3] = function (e) {
-        return Duo(e => {
-            return e.type == 'arc' && e.arc == 'R';
-        }) && [3];
+    // две дуги R 
+    tests[3] = function () {
+        return false;
+        //return Duo(e => {
+        //    return e.type == 'arc' && e.arc == 'R';
+        //}) && [3];
     }
 
-    // горизонтальная линия вверху (5,7)
-    tests[4] = function (e) {
+    // горизонтальная линия вверху
+    tests[4] = function () {
         return Exists(e => {
             if (e.type != 'line') return false;
             var y = (e.p1.y + e.p2.y) / 2;
-            return (e.alpha < 18 * pi || e.alpha > 17 * pi / 18) && y < h / 5;
+            return (e.alpha < pi / 18 || e.alpha > 17 * pi / 18) && y < h / 5;
         }) && [5, 7];
     }
 
-    // горизонтальная линия внизу (2)
-    tests[5] = function (e) {
+    // горизонтальная линия внизу
+    tests[5] = function () {
         return Exists(e => {
             if (e.type != 'line') return false;
             var y = (e.p1.y + e.p2.y) / 2;
+
             return (e.alpha < 18 * pi || e.alpha > 17 * pi / 18) && y > 4 * h / 5;
         }) && [2];
     }
 
-    // горизонтальная линия в середине (4)
-    tests[6] = function (e) {
+    // горизонтальная линия в середине
+    tests[6] = function () {
         return Exists(e => {
             if (e.type != 'line') return false;
             var y = (e.p1.y + e.p2.y) / 2;
@@ -91,16 +94,25 @@ function Analysis(scetch) {
         }) && [4];
     }
 
+    // дуга L в верхней половине
+    tests[7] = function () {
+        return Exists(e => {
+            if (e.type != 'arc') return false;
+            var y = e.center.y;
+            return e.arc == 'L' && y < h / 2;
+        }) && [4];
+    }
+
 
 
     this.doTests = function () {
         var result = { "0": 0, "1": 0, "2": 0, "3": 0, "4": 0, "5": 0, "6": 0, "7": 0, "8": 0, "9": 0 };
-        var debug = [];
+        var tst = [];
 
         // voting
         for (i in tests) {
             var res = tests[i]();
-            debug[i] = res;
+            tst[i] = res;
             if (res) {
                 for (var j = 0; j < res.length; j++) {
                     var dig = res[j];
@@ -113,7 +125,8 @@ function Analysis(scetch) {
         var arr = Object.entries(result)
         arr.sort((p1, p2) => p2[1] - p1[1]);
         arr = arr.map(p => p[0] + "(" + p[1] + ")");
-        return JSON.stringify(arr);
+
+        return JSON.stringify({ 'res': arr, 'tests': tst });
     }
 
 

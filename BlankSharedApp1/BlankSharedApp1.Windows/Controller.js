@@ -48,10 +48,9 @@
     //
     function button_click() {
         scetch.process();
+        var res = new Analysis(scetch).doTests();
         view.drawAll(0.95);
-
-        //scetch.traces[0].splitByInflectionPoints();
-        //alert(new Analysis(scetch).doTests());
+        setTimeout(function () { alert(res); }, 100);
     }
 
 
