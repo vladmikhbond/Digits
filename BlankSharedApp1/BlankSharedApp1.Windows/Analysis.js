@@ -32,15 +32,40 @@ function Analysis(scetch) {
 
     var tests = [];
 
-    // длинная вертикальная линия 
-    tests[0] = function () {
+    var f = function () {
         return Exists(e => {
-            return e.type == 'line' && 9 * pi / 20 < e.alpha && e.alpha < 11 * pi / 20 && e.length > 4 * h / 5;
-        }) && [1, 4];
+            return e.type == 'line' && 80 < e.alpha && e.alpha < 110 && e.length > h / 2;
+        });
     };
-    tests[0].leg = 'длинная вертикальная линия';
+    f.comment = 'длинная вертикальная линия'; f.t = [1, 4, 7]; f.f = [0, 2, 3, 5, 6, 8]; 
+    tests[0] = f;
 
-    // дуга R в верхней половине
+
+    tests[7] = function () {
+        return Exists(e => {
+            return (e.type == 'line' || e.type == 'arc' && e.arc == 'L') && 110 < e.alpha && e.alpha < 135 && e.length > h / 2;
+        }) && [7];
+    };
+    tests[7].comment = 'длинная диагональная линия или дуга L';
+
+    tests[5] = function () {
+        return Exists(e => {
+            if (e.type != 'line') return false;
+            var y = (e.p1.y + e.p2.y) / 2;
+            return (e.alpha < 10 || e.alpha > 170) && h / 5 < y && y < 4 * h / 5;
+        }) && [4];
+    }
+    tests[5].comment = 'горизонтальная линия в середине';
+
+    tests[6] = function () {
+        return Exists(e => {
+            if (e.type != 'arc') return false;
+            var y = e.center.y;
+            return e.arc == 'L' && 15 < e.alpha && e.alpha < 75 && y < h / 2;
+        }) && [4];
+    }
+    tests[6].comment = 'дуга L в верхней половине';
+
     tests[1] = function () {
         return Exists(e => {
             if (e.type != 'arc') return false;
@@ -48,8 +73,8 @@ function Analysis(scetch) {
             return e.arc == 'R' && y < h / 2;
         }) && [2,3];
     }
+    tests[1].comment = 'дуга R в верхней половине';
 
-    // дуга R в нижней половине
     tests[2] = function () {
         return Exists(e => {
             if (e.type != 'arc') return false;
@@ -57,77 +82,58 @@ function Analysis(scetch) {
             return e.arc == 'R' && h / 2 < y;
         }) && [3,5];
     }
+    tests[2].comment = 'дуга R в нижней половине';
 
-    // две дуги R 
     tests[3] = function () {
-        return false;
-        //return Duo(e => {
-        //    return e.type == 'arc' && e.arc == 'R';
-        //}) && [3];
+        return Exists(e => {
+            if (e.type == 'loop') return false;
+            var y = (e.p1.y + e.p2.y) / 2;
+            return (e.alpha < 10 || e.alpha > 170) && y < h / 5;
+        }) && [5, 7];
     }
+    tests[3].comment = 'горизонтальная линия или дуга вверху';
 
-    // горизонтальная линия вверху
+    tests[8] = function () {
+        return !tests[3]() && [0, 1, 2, 3, 4, 6, 8, 9];
+    }
+    tests[8].comment = 'НЕТ горизонтальной линии или дуги вверху';
+
     tests[4] = function () {
         return Exists(e => {
             if (e.type != 'line') return false;
             var y = (e.p1.y + e.p2.y) / 2;
-            return (e.alpha < pi / 18 || e.alpha > 17 * pi / 18) && y < h / 5;
-        }) && [5, 7];
-    }
 
-    // горизонтальная линия внизу
-    tests[5] = function () {
-        return Exists(e => {
-            if (e.type != 'line') return false;
-            var y = (e.p1.y + e.p2.y) / 2;
-
-            return (e.alpha < 18 * pi || e.alpha > 17 * pi / 18) && y > 4 * h / 5;
+            return (e.alpha < 10 || e.alpha > 170) && y > 4 * h / 5;
         }) && [2];
     }
+    tests[4].comment = 'горизонтальная линия внизу';
 
-    // горизонтальная линия в середине
-    tests[6] = function () {
-        return Exists(e => {
-            if (e.type != 'line') return false;
-            var y = (e.p1.y + e.p2.y) / 2;
-            return (e.alpha < pi / 18 || e.alpha > 17 * pi / 18) && h / 5 < y && y < 4 * h / 5;
-        }) && [4];
-    }
-
-    // дуга L в верхней половине
-    tests[7] = function () {
-        return Exists(e => {
-            if (e.type != 'arc') return false;
-            var y = e.center.y;
-            return e.arc == 'L' && y < h / 2;
-        }) && [4];
-    }
 
 
 
     this.doTests = function () {
-        var result = { "0": 0, "1": 0, "2": 0, "3": 0, "4": 0, "5": 0, "6": 0, "7": 0, "8": 0, "9": 0 };
-        var tst = [];
+        var result = [0,1,2,3,4,5,6,7,8,9];
+        var report = "";
 
-        // voting
-        for (i in tests) {
+        // set intersection
+        for (i in [0]) {
             var res = tests[i]();
-            tst[i] = res;
             if (res) {
-                for (var j = 0; j < res.length; j++) {
-                    var dig = res[j];
-                    result[dig] += 1;
-                }
+                report += "test " + i + "  " + tests[i].comment + "\n";
+                result = intersect(result, tests[i].t);
+            } else {
+                result = intersect(result, tests[i].f);
             }
         }
+        report += "RESULT: " + result + "\n";
 
-        // ordering
-        var arr = Object.entries(result)
-        arr.sort((p1, p2) => p2[1] - p1[1]);
-        arr = arr.map(p => p[0] + "(" + p[1] + ")");
 
-        return JSON.stringify({ 'res': arr, 'tests': tst });
+        return report;
     }
+
+    function intersect(a, b) {
+        return a.filter(n => { return b.indexOf(n) != -1; });
+    };
 
 
 

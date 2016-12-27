@@ -234,13 +234,13 @@ Trace.prototype.getElement = function () {
 
     // line or arc.   0 <= alpha < PI
     var p3 = this.points[this.points.length / 2 | 0];  // middle point
-    var alpha12 = Math.atan2(p2.y - p1.y, p2.x - p1.x);
-    var alpha13 = Math.atan2(p3.y - p1.y, p3.x - p1.x); 
+    var alpha12 = Math.atan2(p2.y - p1.y, p2.x - p1.x) * 180 / Math.PI;
+    var alpha13 = Math.atan2(p3.y - p1.y, p3.x - p1.x) * 180 / Math.PI;
 
-    if (Math.abs(alpha12 - alpha13) < Math.PI / 20) {
-        return { type: 'line', 'p1': p1, 'p2': p2, alpha: alpha12, length: dist(p1, p2), center: this.center() };
+    if (Math.abs(alpha12 - alpha13) < 10) {
+        return { type: 'line', 'p1': p1, 'p2': p2, alpha: alpha12, center: this.center(), length: dist(p1, p2) };
     } else {
-        return { type: 'arc', 'p1': p1, 'p2': p2, center: this.center(), alpha: alpha12, arc: alpha12 > alpha13 ? 'R' : 'L' };
+        return { type: 'arc',  'p1': p1, 'p2': p2, alpha: alpha12, center: this.center(), length: dist(p1, p2), arc: alpha12 > alpha13 ? 'R' : 'L' };
     }
 }
 
