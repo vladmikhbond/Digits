@@ -121,52 +121,26 @@ function getNearestTwo(me, i1, j1) {
 
 // Разбивает трассу на несколько, проводя границы по точкам перегиба.
 //
-Trace.prototype.splitByInflectionPoints111 = function () {
-    function atan(p, q) {
-        var a = Math.atan2(p.y - q.y, p.x - q.x);
-        return a < 0 ? 2 * Math.PI + a : a;
-    }
-
-    function atan2(p1, p2, p3) {
-        var a2 = atan(p2, p1), a3 = atan(p3, p1);
-        var a = a3 - a2;
-        return a > Math.PI ? a - 2 * Math.PI : a;
-    }
-
-    var res = [];
-
-    var L = 5, a0, i0 = 0;
-    for (var i = 0; i < this.points.length - 2 * L - 1; i++) {
-        var p1 = this.points[i], p2 = this.points[i + L], p3 = this.points[i + L + L];
-        var a = atan2(p1, p2, p3);
-        if (i == 0) continue;
-        // i - индекс точки перегиба (соседние углы имеют разные знаки)
-        if (a0 * a < 0) {
-            // добавляем кусок от начала трассы до найденной точки перегиба
-            res.push(new Trace(this.points.slice(i0, i + 1)));
-            i0 = i + 1;
-        }
-        a0 = a;
-    }
-    // добавляем остаток трассы
-    var t = new Trace(this.points.slice(i0));
-    if (!t.tooShort())
-        res.push(t);
-    return res;
-};
-
-
 Trace.prototype.splitByInflectionPoints = function ()
 {
     function atan2(p1, p2, p3) {
         var a2 = Math.atan2(p2.y - p1.y, p2.x - p1.x);
         var a3 = Math.atan2(p3.y - p2.y, p3.x - p2.x);
-        return a3 - a2;
+        var r = a3 - a2;
+        if (r < -Math.PI)
+            r = 2 * Math.PI + r;
+        if (r > Math.PI)
+            r = 2 * Math.PI - r;
+        return r;
     }
 
-    var L = 5, K = 0.15, a = [];
+    var L = 5;
+    var K = 0.15; // минимально ощутимая кривизна
+    var a = [];
     for (var i = 0; i < this.points.length - 2 * L - 1; i++) {
-        var p1 = this.points[i], p2 = this.points[i + L], p3 = this.points[i + L + L];
+        var p1 = this.points[i],
+            p2 = this.points[i + L],
+            p3 = this.points[i + L + L];
         var q = atan2(p1, p2, p3);
         if (q > K) {
             q = 1;
@@ -230,7 +204,7 @@ Trace.prototype.getElement = function () {
 
     // loop
     if (dist(p1, p2) < 2 * this.DIST)
-        return { type: 'loop', center: this.center() };
+        return { type: 'loop', center: this.center(), size: this.size() };
 
     // line or arc.   0 <= alpha < PI
     var p3 = this.points[this.points.length / 2 | 0];  // middle point
@@ -272,17 +246,17 @@ function dist(p, q) {
 //    return sum;
 //}
 
-//Trace.prototype.size = function () {
-//    var minX = maxX = this.points[0].x;
-//    var minY = maxY = this.points[0].y;
-//    for (var i in this.points) {
-//        if (minX > this.points[i].x) minX = this.points[i].x;
-//        if (maxX < this.points[i].x) maxX = this.points[i].x;
-//        if (minY > this.points[i].y) minY = this.points[i].y;
-//        if (maxY < this.points[i].y) maxY = this.points[i].y;
-//    }
-//    return Math.max(maxX - minX, maxY - minY);
-//}
+Trace.prototype.size = function () {
+    var minX = maxX = this.points[0].x;
+    var minY = maxY = this.points[0].y;
+    for (var i in this.points) {
+        if (minX > this.points[i].x) minX = this.points[i].x;
+        if (maxX < this.points[i].x) maxX = this.points[i].x;
+        if (minY > this.points[i].y) minY = this.points[i].y;
+        if (maxY < this.points[i].y) maxY = this.points[i].y;
+    }
+    return Math.max(maxX - minX, maxY - minY);
+}
 
 
 

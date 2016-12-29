@@ -12,6 +12,7 @@ function Scetch() {
         this.splitTracesByCorners();
         this.separateLoops();
         this.removeShorts();
+view.drawAll(0.95);
         this.splitTracesByInflactions();
         this.removeShorts();
         this.scale();

@@ -36,9 +36,11 @@ View.prototype.drawAll = function (scale)
         }
         ctx.strokeStyle = colors[t % colors.length];
         ctx.stroke();
-        //
+        // info about elements
         if (scetch.elements.length) {
-            ctx.fillText(scetch.elements[t].type, scetch.elements[t].center.x, scetch.elements[t].center.y);
+            var el_type = scetch.elements[t].type == "arc" ? scetch.elements[t].arc : scetch.elements[t].type;
+            var c = scetch.elements[t].center;
+            ctx.fillText(el_type, c.x, c.y);
         }
     }
     ctx.strokeStyle = "lightgray";
