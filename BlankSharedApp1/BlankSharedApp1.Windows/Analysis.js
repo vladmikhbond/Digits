@@ -75,7 +75,7 @@ function Analysis(scetch) {
                 return Exists(e => {
                     if (e.type != 'arc') return false;
                     var y = e.center.y;
-                    return e.arc == 'L' && 15 < e.alpha && e.alpha < 75 && y < h / 2;
+                    return e.arc == 'L' && 15 < e.alpha && e.alpha < 90 && y < h / 2;
                 });
             }
         ),
@@ -106,8 +106,27 @@ function Analysis(scetch) {
             function () {
                 return Exists(e => {
                     if (e.type == 'loop') return false;
-                    var y = (e.p1.y + e.p2.y) / 2;
-                    return (e.alpha < 10 || e.alpha > 170) && y < h / 5;
+                    return (e.alpha < 10 || e.alpha > 170) && e.center.y < h / 5;
+                });
+            }
+        ),
+
+        new Test('горизонтальная линия или дуга вверху касаются трассы слева', [5],
+            function () {
+                return Exists(e => {
+                    if (e.type == 'loop') return false;
+                    return (e.alpha < 10 || e.alpha > 170) && e.center.y < h / 5 &&
+                        Exists(a => e != a && (dist(e.p1, a.p1) < Trace.prototype.CDIST || dist(e.p1, a.p2) < Trace.prototype.CDIST));
+                });
+            }
+        ),
+
+        new Test('горизонтальная линия или дуга вверху касаются трассы справа', [3, 7],
+            function () {
+                return Exists(e => {
+                    if (e.type == 'loop') return false;
+                    return (e.alpha < 10 || e.alpha > 170) && e.center.y < h / 5 &&
+                        Exists(a => e != a && (dist(e.p2, a.p1) < Trace.prototype.CDIST || dist(e.p1, a.p2) < Trace.prototype.CDIST));
                 });
             }
         ),
@@ -158,7 +177,7 @@ function Analysis(scetch) {
             }
         ),
 
-        new Test('ровно одна петля', [0, 6, 9],
+        new Test('ровно одна петля', [0, 6, 9, 4],
             function () {
                 return Amount(1, e => {
                     return e.type == 'loop';

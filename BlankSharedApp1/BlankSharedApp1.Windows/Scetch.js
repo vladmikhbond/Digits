@@ -9,8 +9,9 @@ function Scetch() {
 
     this.process = function () {
         this.eliminateExtraPoints();
-        this.splitTracesByCorners();
         this.separateLoops();
+        // TODO unite traces into loops
+        this.splitTracesByCorners();
         this.removeShorts();
 view.drawAll(0.95);
         this.splitTracesByInflactions();

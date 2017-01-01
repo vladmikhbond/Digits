@@ -6,6 +6,7 @@ function Trace(points)
 }
 
 Trace.prototype.DIST = 5;
+Trace.prototype.CDIST = Trace.prototype.DIST * 3;
 Trace.prototype.MIN_POINT_COUNT = 5;
 
 Trace.prototype.addPoint = function (p) {
@@ -81,7 +82,7 @@ Trace.prototype.splitByCircle = function () {
     var res = [];
     for (var i = this.MIN_POINT_COUNT; i < this.points.length; i++) {
         for (var j = 0; j < i - this.MIN_POINT_COUNT; j++) {
-            if (dist(this.points[i], this.points[j]) < this.DIST * 4) {
+            if (dist(this.points[i], this.points[j]) < this.CDIST) {
                 // уточняем ближайшую точку
                 var pair = getNearestTwo(this, i, j);
                 i = pair.i; j = pair.j;
@@ -97,8 +98,13 @@ Trace.prototype.splitByCircle = function () {
             }
         }
     }
-    res.push(this);
+
+    // добавляем остаток трассы
+    var t = new Trace(this.points);
+    if (!t.tooShort())
+        res.push(t);
     return res;
+
 };
 
 // Уточняет, какие точки в положительной окрестности самопересечения траектории являются ближайшими
@@ -123,17 +129,6 @@ function getNearestTwo(me, i1, j1) {
 //
 Trace.prototype.splitByInflectionPoints = function ()
 {
-    function atan2(p1, p2, p3) {
-        var a2 = Math.atan2(p2.y - p1.y, p2.x - p1.x);
-        var a3 = Math.atan2(p3.y - p2.y, p3.x - p2.x);
-        var r = a3 - a2;
-        if (r < -Math.PI)
-            r = 2 * Math.PI + r;
-        if (r > Math.PI)
-            r = 2 * Math.PI - r;
-        return r;
-    }
-
     var L = 5;
     var K = 0.15; // минимально ощутимая кривизна
     var a = [];
@@ -141,7 +136,7 @@ Trace.prototype.splitByInflectionPoints = function ()
         var p1 = this.points[i],
             p2 = this.points[i + L],
             p3 = this.points[i + L + L];
-        var q = atan2(p1, p2, p3);
+        var q = arcus(p1, p2, p3);
         if (q > K) {
             q = 1;
             var flag_max = true;
@@ -190,7 +185,7 @@ Trace.prototype.tooShort = function () {
 // Определяет, является ли трасса циклом
 //
 Trace.prototype.isLoop = function () {
-    return dist(this.points[0], this.points[this.points.length - 1]) < 2 * this.DIST;
+    return dist(this.points[0], this.points[this.points.length - 1]) < this.CDIST;
 }
 
 // Определяет, каким элементом является трасса
@@ -203,19 +198,34 @@ Trace.prototype.getElement = function () {
     }
 
     // loop
-    if (dist(p1, p2) < 2 * this.DIST)
+    if (dist(p1, p2) < this.CDIST)
         return { type: 'loop', center: this.center(), size: this.size() };
 
     // line or arc.   0 <= alpha < PI
     var p3 = this.points[this.points.length / 2 | 0];  // middle point
     var alpha12 = Math.atan2(p2.y - p1.y, p2.x - p1.x) * 180 / Math.PI;
     var alpha13 = Math.atan2(p3.y - p1.y, p3.x - p1.x) * 180 / Math.PI;
+    var diff = arcus(p1, p2, p3) * 180 / Math.PI;
 
-    if (Math.abs(alpha12 - alpha13) < 10) {
+    if (Math.abs(diff) < 15) {
         return { type: 'line', 'p1': p1, 'p2': p2, alpha: alpha12, center: this.center(), length: dist(p1, p2) };
     } else {
-        return { type: 'arc',  'p1': p1, 'p2': p2, alpha: alpha12, center: this.center(), length: dist(p1, p2), arc: alpha12 > alpha13 ? 'R' : 'L' };
+        return { type: 'arc',  'p1': p1, 'p2': p2, alpha: alpha12, center: this.center(), length: dist(p1, p2), arc: diff < 0 ? 'R' : 'L' };
     }
+}
+
+
+// Угол в радианах, образованный отрезками p2--p1 и p1--p3
+//
+function arcus(p1, p2, p3) {
+    var a21 = Math.atan2(p2.y - p1.y, p2.x - p1.x);
+    var a31 = Math.atan2(p3.y - p1.y, p3.x - p1.x);
+    var diff = a31 - a21;
+    if (diff < -Math.PI)
+        diff = 2 * Math.PI + diff;
+    if (diff > Math.PI)
+        diff = 2 * Math.PI - diff;
+    return diff;
 }
 
 
