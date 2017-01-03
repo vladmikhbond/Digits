@@ -8,7 +8,7 @@ function Scetch() {
     this.elements = [];
 
     this.process = function () {
-        this.removeShorts();
+
         this.eliminateExtraPoints();
         this.separateLoops();
         // TODO unite traces into loops

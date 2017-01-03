@@ -158,7 +158,7 @@ Trace.prototype.splitByInflectionPoints = function ()
 
     var i0 = 0;
     for (var i = 1; i < a.length - 1; i++) {
-        if (a[i] != a[i - 1]) {
+        if (a[i] != a[i - 1] && a[i - 1] == 0) {
             var t = new Trace(this.points.slice(i0, i+1));
             if (!t.tooShort())
                 res.push(t);
