@@ -59,6 +59,7 @@
     <Content Include="main.js" />
     <Content Include="Scetch.js" />
     <Content Include="Trace.js" />
+    <Content Include="db.js" />
     <Content Include="View.js" />
   </ItemGroup>
   <ItemGroup>

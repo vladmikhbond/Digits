@@ -47,6 +47,7 @@ View.prototype.drawAll = function (scale)
     ctx.strokeRect(0, 0, scetch.width, scetch.height);
 
     ctx.restore();
+
 }
 
 View.prototype.drawLine = function (p1, p2) {

@@ -116,7 +116,7 @@ function Analysis(scetch) {
                 return Exists(e => {
                     if (e.type == 'loop') return false;
                     return (e.alpha < 10 || e.alpha > 170) && e.center.y < h / 5 &&
-                        Exists(a => e != a && (dist(e.p1, a.p1) < Trace.prototype.CDIST || dist(e.p1, a.p2) < Trace.prototype.CDIST));
+                        Exists(a => e != a && a.type != 'loop' && (dist(e.p1, a.p1) < Trace.prototype.CDIST || dist(e.p1, a.p2) < Trace.prototype.CDIST));
                 });
             }
         ),
@@ -126,7 +126,7 @@ function Analysis(scetch) {
                 return Exists(e => {
                     if (e.type == 'loop') return false;
                     return (e.alpha < 10 || e.alpha > 170) && e.center.y < h / 5 &&
-                        Exists(a => e != a && (dist(e.p2, a.p1) < Trace.prototype.CDIST || dist(e.p1, a.p2) < Trace.prototype.CDIST));
+                        Exists(a => e != a && a.type != 'loop' && (dist(e.p2, a.p1) < Trace.prototype.CDIST || dist(e.p1, a.p2) < Trace.prototype.CDIST));
                 });
             }
         ),
@@ -215,7 +215,7 @@ function Analysis(scetch) {
 
         }
         report += "RESULT: " + result + "\n";
-        return report;
+        return { 'result': result, 'report': report };
     }
 
     function intersect(a, b) {

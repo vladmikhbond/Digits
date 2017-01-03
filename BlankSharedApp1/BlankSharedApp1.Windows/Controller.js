@@ -48,9 +48,9 @@
     //
     function button_click() {
         scetch.process();
-        var res = new Analysis(scetch).doTests();
+        var r = new Analysis(scetch).doTests();
         view.drawAll(0.95);
-        setTimeout(function () { alert(res); }, 100);
+        setTimeout(function () { alert(r.report); }, 100);
     }
 
 
